@@ -1,0 +1,59 @@
+use spring_jwt;
+show tables;
+desc user;
+select * from user;
+select *from token;
+select * from boards;
+select * from imageboard;
+select * from imageboard_files;
+
+ SELECT b.*, u.first_name as author_name
+        FROM imageboard b
+        JOIN user u ON b.user_id = u.id
+        WHERE b.id = 2;
+
+SELECT b.*, u.first_name as author_name
+        FROM imageboard b
+        JOIN user u ON b.user_id = u.id
+        ORDER BY b.created_at DESC;
+
+
+
+-- 게시판 테이블
+CREATE TABLE imageboard (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    view_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- 파일 테이블
+CREATE TABLE imageboard_files (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id BIGINT NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (board_id) REFERENCES imageboard(id) ON DELETE CASCADE
+);
+
+commit;
+-- 일딴 drop;
+drop table imageboard_comments;
+-- 댓글 테이블
+CREATE TABLE imageboard_comments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id BIGINT NOT NULL,
+    user_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (board_id) REFERENCES imageboard(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
