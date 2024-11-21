@@ -89,6 +89,8 @@ MVC Config에 추가 file이 가능하도록
 ![image](https://github.com/user-attachments/assets/97880c9a-afed-43bf-b0c5-927aed76f14a)
 
 
+![image](https://github.com/user-attachments/assets/368ebe6e-a5c0-41e0-919c-1f1f5921aa6e)
+
 
 
 
