@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.edu.image.model.mapper.ImageBoardMapper">
+    
+    <sql id="searchCondition">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'title'">
+                        AND b.title LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'">
+                        AND b.content LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'author'">
+                        AND u.first_name LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (b.title LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.content LIKE CONCAT('%', #{keyword}, '%')
+                        OR u.first_name LIKE CONCAT('%', #{keyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+<!--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    view_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO imageboard (title, content, user_id)
+        VALUES (#{title}, #{content}, #{userId})
+    </insert>
+
+    <select id="findById" resultType="imageBoard">
+        SELECT 
+        b.id id, 
+        b.title title, 
+        b.content content,
+        b.user_id userId, 
+        b.view_count viewCount,
+        b.created_at createdAt,
+        b.updated_at updatedAt, 
+        u.first_name as authorName
+        FROM imageboard b
+        JOIN user u ON b.user_id = u.id
+        WHERE b.id = #{id}
+    </select>
+
+    <select id="findAll" resultType="imageBoard">
+        SELECT  
+        b.id id, 
+        b.title title, 
+        b.content content,
+        b.user_id userId, 
+        b.view_count viewCount,
+        b.created_at createdAt,
+        b.updated_at updatedAt, 
+        u.first_name as authorName
+        FROM imageboard b
+        JOIN user u ON b.user_id = u.id
+        <include refid="searchCondition" />
+        ORDER BY b.created_at DESC
+    </select>
+
+    <update id="update">
+        UPDATE imageboard
+        SET title = #{title},
+            content = #{content},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM imageboard WHERE id = #{id}
+    </delete>
+
+    <update id="incrementViewCount">
+        UPDATE imageboard
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+</mapper>
